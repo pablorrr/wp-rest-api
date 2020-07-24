@@ -1,0 +1,35 @@
+teoria:
+test na wystepowanie wp rest api
+http://localhost/nonmulti/wp-json/wp/v2
+
+https://developer.wordpress.org/rest-api/using-the-rest-api/
+przykladowe uzycie zarejestrwowanej trtrasy:
+http://localhost/nonmulti/wp-json/my-namespace/v1/posts/ 
+
+uzycie cutomowej  trasy z podgladem do poj posta- 12 jako e.g id posta
+http://localhost/nonmulti/wp-json/my-namespace/v1/posts/12
+
+https://developer.wordpress.org/rest-api/using-the-rest-api/global-parameters/
+przykladowe wyswietlenie tylko interesujacych pol (pola sa par globalnymi)
+http://localhost/nonmulti/wp-json//wp/v2/posts?_fields=author,id,excerpt,title,link
+
+osadz tylko tresci osadzone wg filtra;
+http://localhost/nonmulti/wp-json/wp/v2/posts?_embed=author
+
+kasowanie posta
+http://localhost/nonmulti/wp-json/wp/v2/posts/13?_method=DELETE
+
+
+zwrocenie iforamcji w innym formacie
+http://localhost/nonmulti/wp-json/wp/v2/posts?_envelope
+
+
+tabelka odniesien dla punktow koncowych
+https://developer.wordpress.org/rest-api/reference/#rest-api-developer-endpoint-reference
+
+kontekst OOP
+https://developer.wordpress.org/rest-api/extending-the-rest-api/controller-classes/
+
+
+
+

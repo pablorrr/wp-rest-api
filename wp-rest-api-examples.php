@@ -313,18 +313,22 @@ function prefix_sanitize_my_arg($value, $request, $param)
  * */
 
 /*Trasy vs punkty końcowe #Trasy a punkty końcowe
-Punkty końcowe to funkcje dostępne za pośrednictwem interfejsu API. Mogą to być na przykład pobieranie indeksu API, aktualizowanie postu lub usuwanie komentarza. Punkty końcowe wykonują określoną funkcję, przyjmując pewną liczbę parametrów i zwracając dane do klienta.
+Punkty końcowe to funkcje dostępne za pośrednictwem interfejsu API. Mogą to być na przykład pobieranie indeksu API,
+ aktualizowanie postu lub usuwanie komentarza.
+Punkty końcowe wykonują określoną funkcję, przyjmując pewną liczbę parametrów i zwracając dane do klienta.
 
-Trasa to „nazwa” używana do uzyskiwania dostępu do punktów końcowych, używana w adresie URL. Trasa może mieć wiele punktów końcowych powiązanych z nią, a jej użycie zależy od czasownika HTTP.
+Trasa to „nazwa” używana do uzyskiwania dostępu do punktów końcowych,
+ używana w adresie URL.
+ Trasa może mieć wiele punktów końcowych powiązanych z nią, a jej użycie zależy od czasownika HTTP.
 
 Na przykład za pomocą adresu URL http://example.com/wp-json/wp/v2/posts/123:
 
 „Trasa” to wp/v2/posts/123- Trasa nie obejmuje, wp-jsonponieważ wp-jsonjest to podstawowa ścieżka dla samego interfejsu API.
 Ta trasa ma 3 punkty końcowe:
-GETwyzwala get_itemmetodę, zwracając dane postu do klienta.
-PUTuruchamia update_itemmetodę, pobierając dane do aktualizacji i zwracając zaktualizowane dane postu.
-DELETEuruchamia delete_itemmetodę, zwracając teraz usunięte dane postu do klienta.
-Alarm:W witrynach bez ładnych bezpośrednich l
+GET wyzwala get_itemmetodę, zwracając dane postu do klienta.
+PUT uruchamia update_itemmetodę, pobierając dane do aktualizacji i zwracając zaktualizowane dane postu.
+DELETE uruchamia delete_itemmetodę, zwracając teraz usunięte dane postu do klienta.
+
      *
      *
      *
@@ -346,9 +350,14 @@ Alarm:W witrynach bez ładnych bezpośrednich l
 
 /*
  *
- * ierwszym przekazanym argumentem register_rest_route()jest przestrzeń nazw, która umożliwia nam grupowanie naszych tras. Drugi przekazany argument to ścieżka zasobu lub baza zasobu. W naszym przykładzie zasób, który odzyskujemy, to „Hello World, to jest wyrażenie REST API WordPress”.
- * Trzeci argument to tablica opcji. Określamy, jakich metod może używać punkt końcowy i jakie
- *  wywołanie zwrotne powinno nastąpić, gdy punkt końcowy jest dopasowany (można zrobić więcej rzeczy, ale są to podstawy).
+ *p ierwszym przekazanym argumentem register_rest_route()jest przestrzeń nazw, która umożliwia nam
+ * grupowanie naszych tras.
+ * Drugi przekazany argument to ścieżka zasobu lub baza zasobu.
+ * W naszym przykładzie zasób, który odzyskujemy, to „Hello World, to jest wyrażenie REST API WordPress”.
+ * Trzeci argument to tablica opcji.
+ * Określamy, jakich metod może używać punkt końcowy i jakie
+ *  wywołanie zwrotne powinno nastąpić, gdy punkt końcowy j
+ * est dopasowany (można zrobić więcej rzeczy, ale są to podstawy).
 
 Trzeci argument pozwala nam również zapewnić wywołanie zwrotne uprawnień, które może ograniczyć dostęp do punktu końcowego tylko niektórym użytkownikom. Trzeci argument oferuje również sposób rejestrowania argumentów dla punktu końcowego, dzięki czemu żądania mogą modyfikować odpowiedź naszego punktu końcowego. Omówimy te pojęcia w części dotyczącej punktów końcowych tego przewodnika.
  *
@@ -454,7 +463,8 @@ Metoda HTTP, w połączeniu z trasą i wywołaniami zwrotnymi, stanowią rdzeń 
 
 /*
  * permission callback
- *  przydatne gdy  masz wrazliwe dane nie mogabyc publiczne tworzysz  callabacki pozwolen narejsestreowane jako endpoitns
+ *  przydatne gdy  masz wrazliwe dane nie mogabyc publiczne tworzysz  callabacki p
+ * ozwolen narejsestreowane jako endpoitns
  *
  */
 /* https://developer.wordpress.org/rest-api/extending-the-rest-api/routes-and-endpoints/#permissions-callback
@@ -777,235 +787,11 @@ add_action('rest_api_init', 'prefixxxx_register_example_routes');
 ///
 /// /////////////////////////////////////////////////////
 
-/* https://developer.wordpress.org/rest-api/extending-the-rest-api/controller-classes/
-
-/*
- * wp rerst api w ujeciu cusyomowej obiketowki- sa to cutom'owe kontrolery  wp rest api
- *  zawiera permissions callback
- * rejestracja tras
- *
- */
 
 
-class My_REST_Posts_Controller
-{
 
-    // Here initialize our namespace and resource name.
-    public function __construct()
-    {
-        $this->namespace = '/my-namespace/v1';
-        $this->resource_name = 'posts';
-    }
 
-    // Register our routes.
-    public function register_routes()
-    {
-        register_rest_route($this->namespace, '/' . $this->resource_name, array(
-            // Here we register the readable endpoint for collections.
-            array(
-                'methods' => 'GET',
-                'callback' => array($this, 'get_items'),
-                'permission_callback' => array($this, 'get_items_permissions_check'),
-            ),
-            // Register our schema callback.
-            'schema' => array($this, 'get_item_schema'),
-        ));
-        register_rest_route($this->namespace, '/' . $this->resource_name . '/(?P<id>[\d]+)', array(
-            // Notice how we are registering multiple endpoints the 'schema' equates to an OPTIONS request.
-            array(
-                'methods' => 'GET',
-                'callback' => array($this, 'get_item'),
-                'permission_callback' => array($this, 'get_item_permissions_check'),
-            ),
-            // Register our schema callback.
-            'schema' => array($this, 'get_item_schema'),
-        ));
-    }
 
-    /**
-     * Check permissions for the posts.
-     *
-     * @param WP_REST_Request $request Current request.
-     */
-    public function get_items_permissions_check($request)
-    {
-        if (!current_user_can('read')) {
-            return new WP_Error('rest_forbidden', esc_html__('You cannot view the post resource.'), array('status' => $this->authorization_status_code()));
-        }
-        return true;
-    }
-
-    /**
-     * Grabs the five most recent posts and outputs them as a rest response.
-     *
-     * @param WP_REST_Request $request Current request.
-     */
-    public function get_items($request)
-    {
-        $args = array(
-            'post_per_page' => 5,
-        );
-        $posts = get_posts($args);
-
-        $data = array();
-
-        if (empty($posts)) {
-            return rest_ensure_response($data);
-        }
-
-        foreach ($posts as $post) {
-            $response = $this->prepare_item_for_response($post, $request);
-            $data[] = $this->prepare_response_for_collection($response);
-        }
-
-        // Return all of our comment response data.
-        return rest_ensure_response($data);
-    }
-
-    /**
-     * Check permissions for the posts.
-     *
-     * @param WP_REST_Request $request Current request.
-     */
-    public function get_item_permissions_check($request)
-    {
-        if (!current_user_can('read')) {
-            return new WP_Error('rest_forbidden', esc_html__('You cannot view the post resource.'), array('status' => $this->authorization_status_code()));
-        }
-        return true;
-    }
-
-    /**
-     * Grabs the five most recent posts and outputs them as a rest response.
-     *
-     * @param WP_REST_Request $request Current request.
-     */
-    public function get_item($request)
-    {
-        $id = (int)$request['id'];
-        $post = get_post($id);
-
-        if (empty($post)) {
-            return rest_ensure_response(array());
-        }
-
-        $response = $this->prepare_item_for_response($post, $request);
-
-        // Return all of our post response data.
-        return $response;
-    }
-
-    /**
-     * Matches the post data to the schema we want.
-     *
-     * @param WP_Post $post The comment object whose response is being prepared.
-     */
-    public function prepare_item_for_response($post, $request)
-    {
-        $post_data = array();
-
-        $schema = $this->get_item_schema($request);
-
-        // We are also renaming the fields to more understandable names.
-        if (isset($schema['properties']['id'])) {
-            $post_data['id'] = (int)$post->ID;
-        }
-
-        if (isset($schema['properties']['content'])) {
-            $post_data['content'] = apply_filters('the_content', $post->post_content, $post);
-        }
-
-        return rest_ensure_response($post_data);
-    }
-
-    /**
-     * Prepare a response for inserting into a collection of responses.
-     *
-     * This is copied from WP_REST_Controller class in the WP REST API v2 plugin.
-     *
-     * @param WP_REST_Response $response Response object.
-     * @return array Response data, ready for insertion into collection data.
-     */
-    public function prepare_response_for_collection($response)
-    {
-        if (!($response instanceof WP_REST_Response)) {
-            return $response;
-        }
-
-        $data = (array)$response->get_data();
-        $server = rest_get_server();
-
-        if (method_exists($server, 'get_compact_response_links')) {
-            $links = call_user_func(array($server, 'get_compact_response_links'), $response);
-        } else {
-            $links = call_user_func(array($server, 'get_response_links'), $response);
-        }
-
-        if (!empty($links)) {
-            $data['_links'] = $links;
-        }
-
-        return $data;
-    }
-
-    /**
-     * Get our sample schema for a post.
-     *
-     * @param WP_REST_Request $request Current request.
-     */
-    public function get_item_schema($request)
-    {
-        if ($this->schema) {
-            // Since WordPress 5.3, the schema can be cached in the $schema property.
-            return $this->schema;
-        }
-
-        $this->schema = array(
-            // This tells the spec of JSON Schema we are using which is draft 4.
-            '$schema' => 'http://json-schema.org/draft-04/schema#',
-            // The title property marks the identity of the resource.
-            'title' => 'post',
-            'type' => 'object',
-            // In JSON Schema you can specify object properties in the properties attribute.
-            'properties' => array(
-                'id' => array(
-                    'description' => esc_html__('Unique identifier for the object.', 'my-textdomain'),
-                    'type' => 'integer',
-                    'context' => array('view', 'edit', 'embed'),
-                    'readonly' => true,
-                ),
-                'content' => array(
-                    'description' => esc_html__('The content for the object.', 'my-textdomain'),
-                    'type' => 'string',
-                ),
-            ),
-        );
-
-        return $this->schema;
-    }
-
-    // Sets up the proper HTTP status code for authorization.
-    public function authorization_status_code()
-    {
-
-        $status = 401;
-
-        if (is_user_logged_in()) {
-            $status = 403;
-        }
-
-        return $status;
-    }
-}
-
-// Function to register our new routes from the controller.
-function prefix_register_my_rest_routes()
-{
-    $controller = new My_REST_Posts_Controller();
-    $controller->register_routes();
-}
-
-add_action('rest_api_init', 'prefix_register_my_rest_routes');
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ///
