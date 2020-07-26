@@ -81,4 +81,5 @@ if (quickAddButton) {//check is browser handles JS
       }
     }
   });
+  console.log(magicalData.siteURL);
 }

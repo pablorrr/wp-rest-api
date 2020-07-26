@@ -22,7 +22,7 @@ class My_REST_Posts_Controller
 {
     // Here initialize our namespace and resource name.
     public function __construct()
-    {
+    {   $this->wpjsonstring = '/wp-json';
         $this->namespace = '/my-namespace/v1';//przestrzen nazw
         $this->resource_name = 'posts';//nazwa zasobu
         add_action('rest_api_init', array($this, 'register_routes'));
@@ -281,7 +281,7 @@ class My_REST_Posts_Controller
         /* binding with WP REST API , magicData is representation key for data sending from php to js*/
         wp_localize_script('main-js', 'magicalData', array(
             'nonce' => wp_create_nonce('wp_rest'),//usage in JS :magicalData.nonce
-            'siteURL' => get_site_url().$this->namespace.'/'.$this->resource_name  //usage in JS :magicalData.siteURL
+            'siteURL' => get_site_url().$this->wpjsonstring.$this->namespace.'/'.$this->resource_name  //usage in JS :magicalData.siteURL
         ));
 
 
